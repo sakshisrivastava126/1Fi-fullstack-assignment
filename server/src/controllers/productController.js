@@ -41,3 +41,33 @@ export const getProductBySlug = async (req, res) => {
     });
   }
 };
+
+export const createProduct = async (req, res) => {
+  try {
+    const product = await Product.create(req.body);
+
+    res.status(201).json({
+      success: true,
+      data: product,
+    });
+  } catch (error) {
+    if (error.name === "ValidationError") {
+      return res.status(400).json({
+        success: false,
+        message: error.message,
+      });
+    }
+
+    if (error.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: "A product with this slug already exists",
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to create product",
+    });
+  }
+};
