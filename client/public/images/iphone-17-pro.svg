@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 400" width="320" height="400" role="img" aria-label="iPhone 17 Pro">
+  <rect width="320" height="400" fill="#f1f5f9" />
+  <rect x="105" y="60" width="110" height="220" rx="20" fill="#0f172a" />
+  <rect x="111" y="66" width="98" height="208" rx="15" fill="#334155" />
+  <rect x="120" y="76" width="44" height="40" rx="12" fill="#1e293b" />
+  <circle cx="132" cy="88" r="7" fill="#0f172a" />
+  <circle cx="152" cy="88" r="7" fill="#0f172a" />
+  <circle cx="132" cy="106" r="7" fill="#0f172a" />
+  <text x="160" y="330" font-family="system-ui, sans-serif" font-size="19" font-weight="600" fill="#0f172a" text-anchor="middle">iPhone 17 Pro</text>
+  <text x="160" y="354" font-family="system-ui, sans-serif" font-size="14" fill="#64748b" text-anchor="middle">Sample image</text>
+</svg>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 400" width="320" height="400" role="img" aria-label="Samsung Galaxy S24 Ultra">
+  <rect width="320" height="400" fill="#f1f5f9" />
+  <rect x="105" y="60" width="110" height="220" rx="12" fill="#1c1917" />
+  <rect x="111" y="66" width="98" height="208" rx="8" fill="#44403c" />
+  <circle cx="130" cy="86" r="6" fill="#1c1917" />
+  <circle cx="130" cy="104" r="6" fill="#1c1917" />
+  <circle cx="130" cy="122" r="6" fill="#1c1917" />
+  <text x="160" y="330" font-family="system-ui, sans-serif" font-size="17" font-weight="600" fill="#0f172a" text-anchor="middle">Galaxy S24 Ultra</text>
+  <text x="160" y="354" font-family="system-ui, sans-serif" font-size="14" fill="#64748b" text-anchor="middle">Sample image</text>
+</svg>
