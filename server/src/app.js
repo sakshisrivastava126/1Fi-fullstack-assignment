@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import productRoutes from "./routes/productRoutes.js";
 
 const app = express();
 
@@ -12,5 +13,7 @@ app.get("/api/health", (req, res) => {
     message: "1Fi EMI Store API is running",
   });
 });
+
+app.use("/api/products", productRoutes);
 
 export default app;
