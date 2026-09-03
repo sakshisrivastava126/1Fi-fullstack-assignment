@@ -1,8 +1,34 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import ProductCard from '../components/ProductCard.jsx'
-import sampleProducts from '../data/sampleProducts.js'
+import { API_BASE_URL } from '../config.js'
 
 function Home() {
+  const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/products`)
+
+        if (!response.ok) {
+          throw new Error('Request failed')
+        }
+
+        const body = await response.json()
+        setProducts(body.data)
+      } catch {
+        setError('Could not load products. Please make sure the API is running.')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadProducts()
+  }, [])
+
   return (
     <div className="min-h-screen bg-slate-50">
       <header className="border-b border-slate-200 bg-white">
@@ -27,15 +53,50 @@ function Home() {
 
         <section className="mt-10">
           <h2 className="text-xl font-semibold text-slate-900">Popular smartphones</h2>
-          <p className="mt-1 text-sm text-slate-500">
-            {sampleProducts.length} products available
-          </p>
 
-          <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {sampleProducts.map((product) => (
-              <ProductCard key={product.slug} product={product} />
-            ))}
-          </div>
+          {loading && (
+            <p className="mt-6 text-slate-500">Loading products…</p>
+          )}
+
+          {!loading && error && (
+            <p className="mt-6 rounded-lg border border-red-200 bg-red-50 px-4 py-6 text-center text-red-700">
+              {error}
+            </p>
+          )}
+
+          {!loading && !error && products.length === 0 && (
+            <p className="mt-6 rounded-lg border border-slate-200 bg-white px-4 py-10 text-center text-slate-500">
+              No products available right now.
+            </p>
+          )}
+
+          {!loading && !error && products.length > 0 && (
+            <>
+              <p className="mt-1 text-sm text-slate-500">
+                {products.length} products available
+              </p>
+
+              <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {products.map((product) => {
+                  const variant = product.variants[0]
+
+                  return (
+                    <ProductCard
+                      key={product.slug}
+                      product={{
+                        slug: product.slug,
+                        name: product.name,
+                        variant: variant.name,
+                        mrp: variant.mrp,
+                        price: variant.price,
+                        image: variant.image,
+                      }}
+                    />
+                  )
+                })}
+              </div>
+            </>
+          )}
         </section>
       </main>
     </div>
