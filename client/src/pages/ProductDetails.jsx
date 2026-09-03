@@ -6,6 +6,7 @@ import formatCurrency from '../utils/formatCurrency.js'
 function ProductDetails() {
   const { slug } = useParams()
   const [product, setProduct] = useState(null)
+  const [selectedVariantIndex, setSelectedVariantIndex] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -14,6 +15,7 @@ function ProductDetails() {
       setLoading(true)
       setError('')
       setProduct(null)
+      setSelectedVariantIndex(0)
 
       try {
         const response = await fetch(`${API_BASE_URL}/api/products/${slug}`)
@@ -78,7 +80,7 @@ function ProductDetails() {
   }
 
   const { name, description, variants } = product
-  const variant = variants[0]
+  const variant = variants[selectedVariantIndex] ?? variants[0]
   const { mrp, price, image } = variant
   const discount = Math.round(((mrp - price) / mrp) * 100)
 
@@ -105,6 +107,46 @@ function ProductDetails() {
             <h1 className="text-3xl font-bold text-slate-900">{name}</h1>
             <p className="mt-2 text-slate-500">{variant.name}</p>
             <p className="mt-4 text-slate-600">{description}</p>
+
+            <div className="mt-6">
+              <h2 className="text-sm font-semibold text-slate-900">
+                Choose a variant
+              </h2>
+              <div className="mt-3 flex flex-wrap gap-3">
+                {variants.map((item, index) => {
+                  const isSelected = index === selectedVariantIndex
+
+                  return (
+                    <button
+                      key={item._id ?? item.name}
+                      type="button"
+                      onClick={() => setSelectedVariantIndex(index)}
+                      aria-pressed={isSelected}
+                      className={`rounded-lg border px-4 py-2.5 text-left transition ${
+                        isSelected
+                          ? 'border-violet-600 bg-violet-50 ring-1 ring-violet-600'
+                          : 'border-slate-300 bg-white hover:border-slate-400'
+                      }`}
+                    >
+                      <span
+                        className={`block text-sm font-medium ${
+                          isSelected ? 'text-violet-900' : 'text-slate-700'
+                        }`}
+                      >
+                        {item.name}
+                      </span>
+                      <span
+                        className={`block text-xs ${
+                          isSelected ? 'text-violet-700' : 'text-slate-500'
+                        }`}
+                      >
+                        {formatCurrency(item.price)}
+                      </span>
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
 
             <div className="mt-6 flex flex-wrap items-baseline gap-3">
               <span className="text-3xl font-bold text-slate-900">
