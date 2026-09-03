@@ -6,7 +6,13 @@ Built for the 1Fi SDE1 assignment.
 
 ## Live Demo
 
-_Deployment URL will be added here._
+**App:** https://1-fi-fullstack-assignment.vercel.app
+
+**API:** https://onefi-fullstack-assignment.onrender.com/api/products
+
+The frontend is deployed on Vercel and the API on Render, with the database on MongoDB Atlas.
+
+> The API is hosted on Render's free tier, which sleeps after a period of inactivity. The first request may take 30–50 seconds while the service wakes up; subsequent requests are fast.
 
 ## Demo Video
 
@@ -368,6 +374,10 @@ The backend and frontend deploy as two separate services.
 
 **Frontend** — set `VITE_API_URL` to the deployed backend URL at build time. Vite inlines environment variables during the build, so this must be set before `npm run build`, not at runtime.
 
-**SPA routing** — the app uses `BrowserRouter`, so deep links such as `/products/iphone-17-pro` must be rewritten to `index.html` by the host. Without a catch-all rewrite rule, refreshing a product page returns a 404.
+**SPA routing** — the app uses `BrowserRouter`, so deep links such as `/products/iphone-17-pro` must be rewritten to `index.html` by the host. Without a catch-all rewrite rule, loading or refreshing a product URL directly returns a 404 even though in-app navigation works. `client/vercel.json` provides this rule for Vercel:
+
+```json
+{ "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }] }
+```
 
 **CORS** — the API currently enables CORS for all origins. This can be restricted to the deployed frontend origin.
