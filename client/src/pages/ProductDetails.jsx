@@ -93,7 +93,7 @@ function ProductDetails() {
   return (
     <div className="min-h-screen bg-slate-50">
       <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 2xl:max-w-7xl">
           <Link to="/" className="text-xl font-bold text-slate-900">
             1Fi <span className="text-violet-700">EMI Store</span>
           </Link>
@@ -103,14 +103,18 @@ function ProductDetails() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-4 py-10">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-          <div className="flex items-center justify-center rounded-xl border border-slate-200 bg-white p-6">
-            <img src={image} alt={name} className="h-80 w-auto object-contain" />
+      <main className="mx-auto max-w-6xl px-4 py-6 sm:py-10 2xl:max-w-7xl">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
+          <div className="flex items-center justify-center rounded-xl border border-slate-200 bg-white p-4 sm:p-6">
+            <img
+              src={image}
+              alt={name}
+              className="h-56 w-full max-w-sm object-contain sm:h-72 lg:h-80"
+            />
           </div>
 
           <div>
-            <h1 className="text-3xl font-bold text-slate-900">{name}</h1>
+            <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">{name}</h1>
             <p className="mt-2 text-slate-500">{variant.name}</p>
             <p className="mt-4 text-slate-600">{description}</p>
 
@@ -170,8 +174,8 @@ function ProductDetails() {
               )}
             </div>
 
-            <div className="mt-8 rounded-xl border border-slate-200 bg-white p-6">
-              <h2 className="text-lg font-semibold text-slate-900">
+            <div className="mt-8 rounded-xl border border-slate-200 bg-white p-4 sm:p-6">
+              <h2 className="text-base font-semibold text-slate-900 sm:text-lg">
                 EMI plans backed by mutual funds
               </h2>
               {emiPlans.length === 0 ? (
@@ -236,8 +240,8 @@ function ProductDetails() {
             </button>
 
             {confirmed && selectedPlan && (
-              <div className="mt-6 rounded-xl border border-green-300 bg-green-50 p-6">
-                <h2 className="text-lg font-semibold text-green-900">
+              <div className="mt-6 rounded-xl border border-green-300 bg-green-50 p-4 sm:p-6">
+                <h2 className="text-base font-semibold text-green-900 sm:text-lg">
                   Plan selected — ready to continue
                 </h2>
                 <p className="mt-1 text-sm text-green-800">

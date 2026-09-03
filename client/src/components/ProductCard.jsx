@@ -14,7 +14,7 @@ function ProductCard({ product }) {
         <img
           src={image}
           alt={name}
-          className="h-56 w-auto object-contain transition group-hover:scale-105"
+          className="h-48 w-full object-contain transition group-hover:scale-105 sm:h-56"
         />
       </div>
 

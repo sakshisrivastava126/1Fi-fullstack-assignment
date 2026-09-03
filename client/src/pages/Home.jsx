@@ -32,17 +32,19 @@ function Home() {
   return (
     <div className="min-h-screen bg-slate-50">
       <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 2xl:max-w-7xl">
           <Link to="/" className="text-xl font-bold text-slate-900">
             1Fi <span className="text-violet-700">EMI Store</span>
           </Link>
-          <span className="text-sm text-slate-500">EMI backed by mutual funds</span>
+          <span className="hidden text-sm text-slate-500 sm:block">
+            EMI backed by mutual funds
+          </span>
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-4 py-10">
-        <section className="rounded-2xl bg-violet-700 px-6 py-10 text-white sm:px-10 sm:py-14">
-          <h1 className="text-3xl font-bold sm:text-4xl">
+      <main className="mx-auto max-w-6xl px-4 py-6 sm:py-10 2xl:max-w-7xl">
+        <section className="rounded-2xl bg-violet-700 px-5 py-8 text-white sm:px-10 sm:py-14">
+          <h1 className="text-2xl font-bold sm:text-4xl">
             Buy now, pay in easy EMIs
           </h1>
           <p className="mt-3 max-w-2xl text-violet-100">
@@ -51,8 +53,10 @@ function Home() {
           </p>
         </section>
 
-        <section className="mt-10">
-          <h2 className="text-xl font-semibold text-slate-900">Popular smartphones</h2>
+        <section className="mt-8 sm:mt-10">
+          <h2 className="text-lg font-semibold text-slate-900 sm:text-xl">
+            Popular smartphones
+          </h2>
 
           {loading && (
             <p className="mt-6 text-slate-500">Loading products…</p>
