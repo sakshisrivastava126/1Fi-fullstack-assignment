@@ -7,9 +7,13 @@ function Home() {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [retryCount, setRetryCount] = useState(0)
 
   useEffect(() => {
     const loadProducts = async () => {
+      setLoading(true)
+      setError('')
+
       try {
         const response = await fetch(`${API_BASE_URL}/api/products`)
 
@@ -18,8 +22,9 @@ function Home() {
         }
 
         const body = await response.json()
-        setProducts(body.data)
+        setProducts(body.data ?? [])
       } catch {
+        setProducts([])
         setError('Could not load products. Please make sure the API is running.')
       } finally {
         setLoading(false)
@@ -27,7 +32,10 @@ function Home() {
     }
 
     loadProducts()
-  }, [])
+  }, [retryCount])
+
+  // A card needs a variant for its price and image, so skip any product without one.
+  const sellableProducts = products.filter((product) => product.variants?.length > 0)
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -59,29 +67,60 @@ function Home() {
           </h2>
 
           {loading && (
-            <p className="mt-6 text-slate-500">Loading products…</p>
+            <div role="status" aria-label="Loading products">
+              <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {[1, 2, 3].map((placeholder) => (
+                  <div
+                    key={placeholder}
+                    className="animate-pulse overflow-hidden rounded-xl border border-slate-200 bg-white"
+                  >
+                    <div className="h-48 bg-slate-100 sm:h-56" />
+                    <div className="space-y-3 p-5">
+                      <div className="h-4 w-2/3 rounded bg-slate-200" />
+                      <div className="h-3 w-1/2 rounded bg-slate-100" />
+                      <div className="h-5 w-1/3 rounded bg-slate-200" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           )}
 
           {!loading && error && (
-            <p className="mt-6 rounded-lg border border-red-200 bg-red-50 px-4 py-6 text-center text-red-700">
-              {error}
-            </p>
+            <div
+              role="alert"
+              className="mt-6 rounded-lg border border-red-200 bg-red-50 px-4 py-8 text-center"
+            >
+              <p className="font-semibold text-red-800">Something went wrong</p>
+              <p className="mt-1 text-sm text-red-700">{error}</p>
+              <button
+                type="button"
+                onClick={() => setRetryCount((count) => count + 1)}
+                className="mt-5 rounded-md bg-violet-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-800"
+              >
+                Try again
+              </button>
+            </div>
           )}
 
-          {!loading && !error && products.length === 0 && (
-            <p className="mt-6 rounded-lg border border-slate-200 bg-white px-4 py-10 text-center text-slate-500">
-              No products available right now.
-            </p>
+          {!loading && !error && sellableProducts.length === 0 && (
+            <div className="mt-6 rounded-lg border border-dashed border-slate-300 bg-white px-4 py-12 text-center">
+              <p className="font-semibold text-slate-900">No products available</p>
+              <p className="mt-1 text-sm text-slate-500">
+                Please check back later.
+              </p>
+            </div>
           )}
 
-          {!loading && !error && products.length > 0 && (
+          {!loading && !error && sellableProducts.length > 0 && (
             <>
               <p className="mt-1 text-sm text-slate-500">
-                {products.length} products available
+                {sellableProducts.length}{' '}
+                {sellableProducts.length === 1 ? 'product' : 'products'} available
               </p>
 
               <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {products.map((product) => {
+                {sellableProducts.map((product) => {
                   const variant = product.variants[0]
 
                   return (

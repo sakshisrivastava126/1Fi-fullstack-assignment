@@ -3,6 +3,34 @@ import { Link, useParams } from 'react-router-dom'
 import { API_BASE_URL } from '../config.js'
 import formatCurrency from '../utils/formatCurrency.js'
 
+function StoreHeader() {
+  return (
+    <header className="border-b border-slate-200 bg-white">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 2xl:max-w-7xl">
+        <Link to="/" className="text-xl font-bold text-slate-900">
+          1Fi <span className="text-violet-700">EMI Store</span>
+        </Link>
+        <Link to="/" className="text-sm text-slate-500 hover:text-slate-900">
+          ← Back to store
+        </Link>
+      </div>
+    </header>
+  )
+}
+
+// Shared shell for the loading / error / not-found screens so they stay
+// consistent and always keep the header navigation available.
+function StatusScreen({ children }) {
+  return (
+    <div className="min-h-screen bg-slate-50">
+      <StoreHeader />
+      <main className="mx-auto flex max-w-6xl flex-col items-center px-4 py-16 text-center sm:py-24">
+        {children}
+      </main>
+    </div>
+  )
+}
+
 function ProductDetails() {
   const { slug } = useParams()
   const [product, setProduct] = useState(null)
@@ -11,6 +39,7 @@ function ProductDetails() {
   const [confirmed, setConfirmed] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [retryCount, setRetryCount] = useState(0)
 
   useEffect(() => {
     const loadProduct = async () => {
@@ -42,48 +71,82 @@ function ProductDetails() {
     }
 
     loadProduct()
-  }, [slug])
+  }, [slug, retryCount])
 
   if (loading) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-slate-50 px-4">
-        <p className="text-slate-500">Loading product…</p>
-      </div>
+      <StatusScreen>
+        <div role="status" aria-label="Loading product" className="w-full">
+          <div className="mx-auto grid w-full grid-cols-1 gap-6 text-left lg:grid-cols-2">
+            <div className="h-64 animate-pulse rounded-xl border border-slate-200 bg-white sm:h-80" />
+            <div className="animate-pulse space-y-4">
+              <div className="h-8 w-2/3 rounded bg-slate-200" />
+              <div className="h-4 w-1/3 rounded bg-slate-100" />
+              <div className="h-4 w-full rounded bg-slate-100" />
+              <div className="h-10 w-1/2 rounded bg-slate-200" />
+              <div className="h-40 w-full rounded-xl bg-slate-100" />
+            </div>
+          </div>
+        </div>
+      </StatusScreen>
     )
   }
 
   if (error) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-slate-50 px-4">
-        <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-6 text-center text-red-700">
-          {error}
-        </p>
-        <Link
-          to="/"
-          className="mt-6 rounded-md bg-violet-700 px-5 py-2.5 text-white hover:bg-violet-800"
-        >
+      <StatusScreen>
+        <div role="alert" className="rounded-lg border border-red-200 bg-red-50 px-6 py-8">
+          <h1 className="text-xl font-bold text-red-800">Something went wrong</h1>
+          <p className="mt-2 text-sm text-red-700">{error}</p>
+          <button
+            type="button"
+            onClick={() => setRetryCount((count) => count + 1)}
+            className="mt-5 rounded-md bg-violet-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-800"
+          >
+            Try again
+          </button>
+        </div>
+        <Link to="/" className="mt-6 text-sm text-slate-500 hover:text-slate-900">
           Back to store
         </Link>
-      </div>
+      </StatusScreen>
     )
   }
 
   if (!product) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-slate-50 px-4">
+      <StatusScreen>
         <h1 className="text-2xl font-bold text-slate-900">Product not found</h1>
         <p className="mt-2 text-slate-500">No product matches "{slug}".</p>
         <Link
           to="/"
-          className="mt-6 rounded-md bg-violet-700 px-5 py-2.5 text-white hover:bg-violet-800"
+          className="mt-6 rounded-md bg-violet-700 px-5 py-2.5 text-white transition hover:bg-violet-800"
         >
           Back to store
         </Link>
-      </div>
+      </StatusScreen>
     )
   }
 
-  const { name, description, variants } = product
+  const { name, description, variants = [] } = product
+
+  if (variants.length === 0) {
+    return (
+      <StatusScreen>
+        <h1 className="text-2xl font-bold text-slate-900">{name}</h1>
+        <p className="mt-2 max-w-md text-slate-500">
+          This product has no variants available to buy right now.
+        </p>
+        <Link
+          to="/"
+          className="mt-6 rounded-md bg-violet-700 px-5 py-2.5 text-white transition hover:bg-violet-800"
+        >
+          Back to store
+        </Link>
+      </StatusScreen>
+    )
+  }
+
   const variant = variants[selectedVariantIndex] ?? variants[0]
   const { mrp, price, image } = variant
   const discount = Math.round(((mrp - price) / mrp) * 100)
@@ -92,16 +155,7 @@ function ProductDetails() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 2xl:max-w-7xl">
-          <Link to="/" className="text-xl font-bold text-slate-900">
-            1Fi <span className="text-violet-700">EMI Store</span>
-          </Link>
-          <Link to="/" className="text-sm text-slate-500 hover:text-slate-900">
-            ← Back to store
-          </Link>
-        </div>
-      </header>
+      <StoreHeader />
 
       <main className="mx-auto max-w-6xl px-4 py-6 sm:py-10 2xl:max-w-7xl">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
@@ -179,9 +233,14 @@ function ProductDetails() {
                 EMI plans backed by mutual funds
               </h2>
               {emiPlans.length === 0 ? (
-                <p className="mt-4 rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-8 text-center text-sm text-slate-500">
-                  No EMI plans available for this variant.
-                </p>
+                <div className="mt-4 rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-8 text-center">
+                  <p className="text-sm font-medium text-slate-700">
+                    No EMI plans available for this variant
+                  </p>
+                  <p className="mt-1 text-sm text-slate-500">
+                    Try another variant to see available plans.
+                  </p>
+                </div>
               ) : (
                 <div className="mt-4 space-y-3">
                   {emiPlans.map((plan, index) => {
