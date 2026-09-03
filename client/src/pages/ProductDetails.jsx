@@ -7,6 +7,7 @@ function ProductDetails() {
   const { slug } = useParams()
   const [product, setProduct] = useState(null)
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0)
+  const [selectedPlanIndex, setSelectedPlanIndex] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -16,6 +17,7 @@ function ProductDetails() {
       setError('')
       setProduct(null)
       setSelectedVariantIndex(0)
+      setSelectedPlanIndex(0)
 
       try {
         const response = await fetch(`${API_BASE_URL}/api/products/${slug}`)
@@ -83,6 +85,7 @@ function ProductDetails() {
   const variant = variants[selectedVariantIndex] ?? variants[0]
   const { mrp, price, image } = variant
   const discount = Math.round(((mrp - price) / mrp) * 100)
+  const emiPlans = variant.emiPlans ?? []
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -120,7 +123,10 @@ function ProductDetails() {
                     <button
                       key={item._id ?? item.name}
                       type="button"
-                      onClick={() => setSelectedVariantIndex(index)}
+                      onClick={() => {
+                        setSelectedVariantIndex(index)
+                        setSelectedPlanIndex(0)
+                      }}
                       aria-pressed={isSelected}
                       className={`rounded-lg border px-4 py-2.5 text-left transition ${
                         isSelected
@@ -164,9 +170,53 @@ function ProductDetails() {
               <h2 className="text-lg font-semibold text-slate-900">
                 EMI plans backed by mutual funds
               </h2>
-              <p className="mt-4 rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-8 text-center text-sm text-slate-500">
-                EMI plans will appear here
-              </p>
+              {emiPlans.length === 0 ? (
+                <p className="mt-4 rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-8 text-center text-sm text-slate-500">
+                  No EMI plans available for this variant.
+                </p>
+              ) : (
+                <div className="mt-4 space-y-3">
+                  {emiPlans.map((plan, index) => {
+                    const isSelected = index === selectedPlanIndex
+
+                    return (
+                      <button
+                        key={plan._id ?? index}
+                        type="button"
+                        onClick={() => setSelectedPlanIndex(index)}
+                        aria-pressed={isSelected}
+                        className={`w-full rounded-lg border px-4 py-3 text-left transition ${
+                          isSelected
+                            ? 'border-violet-600 bg-violet-50 ring-1 ring-violet-600'
+                            : 'border-slate-200 bg-white hover:border-slate-400'
+                        }`}
+                      >
+                        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                          <span
+                            className={`font-semibold ${
+                              isSelected ? 'text-violet-900' : 'text-slate-900'
+                            }`}
+                          >
+                            {formatCurrency(plan.monthlyPayment)} × {plan.tenure} months
+                          </span>
+                          <span
+                            className={`text-sm ${
+                              isSelected ? 'text-violet-700' : 'text-slate-500'
+                            }`}
+                          >
+                            {plan.interestRate}% interest
+                          </span>
+                        </div>
+                        {plan.cashback > 0 && (
+                          <span className="mt-1 block text-xs text-green-600">
+                            Additional cashback of {formatCurrency(plan.cashback)}
+                          </span>
+                        )}
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
             </div>
           </div>
         </div>
