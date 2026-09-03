@@ -8,6 +8,7 @@ function ProductDetails() {
   const [product, setProduct] = useState(null)
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0)
   const [selectedPlanIndex, setSelectedPlanIndex] = useState(0)
+  const [confirmed, setConfirmed] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -18,6 +19,7 @@ function ProductDetails() {
       setProduct(null)
       setSelectedVariantIndex(0)
       setSelectedPlanIndex(0)
+      setConfirmed(false)
 
       try {
         const response = await fetch(`${API_BASE_URL}/api/products/${slug}`)
@@ -86,6 +88,7 @@ function ProductDetails() {
   const { mrp, price, image } = variant
   const discount = Math.round(((mrp - price) / mrp) * 100)
   const emiPlans = variant.emiPlans ?? []
+  const selectedPlan = emiPlans[selectedPlanIndex] ?? null
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -126,6 +129,7 @@ function ProductDetails() {
                       onClick={() => {
                         setSelectedVariantIndex(index)
                         setSelectedPlanIndex(0)
+                        setConfirmed(false)
                       }}
                       aria-pressed={isSelected}
                       className={`rounded-lg border px-4 py-2.5 text-left transition ${
@@ -183,7 +187,10 @@ function ProductDetails() {
                       <button
                         key={plan._id ?? index}
                         type="button"
-                        onClick={() => setSelectedPlanIndex(index)}
+                        onClick={() => {
+                          setSelectedPlanIndex(index)
+                          setConfirmed(false)
+                        }}
                         aria-pressed={isSelected}
                         className={`w-full rounded-lg border px-4 py-3 text-left transition ${
                           isSelected
@@ -218,6 +225,70 @@ function ProductDetails() {
                 </div>
               )}
             </div>
+
+            <button
+              type="button"
+              onClick={() => setConfirmed(true)}
+              disabled={!selectedPlan}
+              className="mt-6 w-full rounded-lg bg-violet-700 px-6 py-3 font-semibold text-white transition hover:bg-violet-800 disabled:cursor-not-allowed disabled:bg-slate-300 sm:w-auto"
+            >
+              Proceed with this plan
+            </button>
+
+            {confirmed && selectedPlan && (
+              <div className="mt-6 rounded-xl border border-green-300 bg-green-50 p-6">
+                <h2 className="text-lg font-semibold text-green-900">
+                  Plan selected — ready to continue
+                </h2>
+                <p className="mt-1 text-sm text-green-800">
+                  Review your selection below. Nothing has been purchased yet — no
+                  payment has been taken and no order has been created.
+                </p>
+
+                <dl className="mt-4 space-y-2 text-sm">
+                  <div className="flex flex-wrap justify-between gap-x-4">
+                    <dt className="text-slate-600">Product</dt>
+                    <dd className="font-medium text-slate-900">{name}</dd>
+                  </div>
+                  <div className="flex flex-wrap justify-between gap-x-4">
+                    <dt className="text-slate-600">Variant</dt>
+                    <dd className="font-medium text-slate-900">{variant.name}</dd>
+                  </div>
+                  <div className="flex flex-wrap justify-between gap-x-4">
+                    <dt className="text-slate-600">Price</dt>
+                    <dd className="font-medium text-slate-900">
+                      {formatCurrency(price)}
+                    </dd>
+                  </div>
+                  <div className="flex flex-wrap justify-between gap-x-4">
+                    <dt className="text-slate-600">Monthly payment</dt>
+                    <dd className="font-medium text-slate-900">
+                      {formatCurrency(selectedPlan.monthlyPayment)}
+                    </dd>
+                  </div>
+                  <div className="flex flex-wrap justify-between gap-x-4">
+                    <dt className="text-slate-600">Tenure</dt>
+                    <dd className="font-medium text-slate-900">
+                      {selectedPlan.tenure} months
+                    </dd>
+                  </div>
+                  <div className="flex flex-wrap justify-between gap-x-4">
+                    <dt className="text-slate-600">Interest rate</dt>
+                    <dd className="font-medium text-slate-900">
+                      {selectedPlan.interestRate}%
+                    </dd>
+                  </div>
+                  {selectedPlan.cashback > 0 && (
+                    <div className="flex flex-wrap justify-between gap-x-4">
+                      <dt className="text-slate-600">Cashback</dt>
+                      <dd className="font-medium text-green-700">
+                        {formatCurrency(selectedPlan.cashback)}
+                      </dd>
+                    </div>
+                  )}
+                </dl>
+              </div>
+            )}
           </div>
         </div>
       </main>
